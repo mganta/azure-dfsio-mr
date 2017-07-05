@@ -88,7 +88,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
   private static final int TEST_TYPE_READ = 0;
   private static final int TEST_TYPE_WRITE = 1;
   private static final int TEST_TYPE_CLEANUP = 2;
-  private static final int DEFAULT_BUFFER_SIZE = 4000000;
+  private static final int DEFAULT_BUFFER_SIZE = 40000000;
   private static final String BASE_FILE_NAME = "test_io_";
   private static final String DEFAULT_RES_FILE_NAME = "TestDFSIOEnh_results.log";
 
@@ -209,7 +209,11 @@ public class TestDFSIOEnh extends Configured implements Tool {
 
         totalSize *= MEGA;
       //  OutputStream out;
-        FSDataOutputStream out = fs.create(new Path(DfsioeConfig.getInstance().getDataDir(getConf()), name), true, bufferSize);
+        DfsioeConfig.getInstance().getTestRootDir(getConf());
+        FileSystem uriFs = FileSystem.get(URI.create(DfsioeConfig.getInstance().getTestRootDir()), getConf());
+
+        FSDataOutputStream out = uriFs.create(new Path(DfsioeConfig.getInstance().getDataDir(), name), true, bufferSize);
+        System.out.println("path " + DfsioeConfig.getInstance().getDataDir() + " ===> name " + name);
         stats.objSize = totalSize;        
         
         long lastTimeStamp=0;
@@ -224,8 +228,6 @@ public class TestDFSIOEnh extends Configured implements Tool {
             for (nrRemaining = totalSize; nrRemaining > 0; nrRemaining -= bufferSize) {
                 int curSize = (bufferSize < nrRemaining)? bufferSize : (int)nrRemaining;
                 out.write(buffer, 0, curSize);
-                out.hflush();
-
                 reporter.setStatus("writing " + name + "@" + 
                                     (totalSize - nrRemaining) + "/" + totalSize
                                     + " ::host = " + hostName);
@@ -572,11 +574,13 @@ public class TestDFSIOEnh extends Configured implements Tool {
     try {
 
         Configuration fsConfig = new Configuration(getConf());
-
         fsConfig.setInt("test.io.file.buffer.size", bufferSize);
         fsConfig.setInt("test.io.sampling.interval",tputSampleInterval);
- 
-	FileSystem fs = FileSystem.get(URI.create(DfsioeConfig.getInstance().getTestRootDir(fsConfig)), fsConfig);
+
+        DfsioeConfig.getInstance().getTestRootDir(fsConfig);
+
+
+	    FileSystem fs = FileSystem.get(URI.create(DfsioeConfig.getInstance().getTestRootDir()), fsConfig);
 
         //get the configuration of max number of concurrent maps
         JobConf dummyConf = new JobConf(fsConfig, TestDFSIOEnh.class);

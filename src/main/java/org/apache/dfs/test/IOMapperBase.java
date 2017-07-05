@@ -49,7 +49,7 @@ public abstract class IOMapperBase extends Configured
 
     public IOMapperBase(Configuration conf) {
         super(conf);
-        bufferSize = conf.getInt("test.io.file.buffer.size", 4096);
+        bufferSize = conf.getInt("test.io.file.buffer.size", 40000000);
         buffer = new byte[bufferSize];
         try {
             hostName = InetAddress.getLocalHost().getHostName();
