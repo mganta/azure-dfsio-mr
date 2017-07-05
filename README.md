@@ -11,8 +11,7 @@ Write:
 hadoop jar dfs-tests-1.0-SNAPSHOT-jar-with-dependencies.jar org.apache.dfs.test.TestDFSIOEnh -Dtest.build.data=adl://dfsiotest.azuredatalakestore.net/dfsio -write -nrFiles 10 -fileSize 2000  -plotInteval 1000 -sampleUnit m -sampleInteval 200 -sumThreshold 0.5 -tputReportTotal -bufferSize 4096
 
 Read: 
-hadoop jar dfs-tests-1.0-SNAPSHOT-jar-with-dependencies.jar org.apache.dfs.test.TestDFSIOEnh -Dtest.build.data=adl://dfsiotest.azuredatalakestore.net/dfsio -read -nrFiles 10 -fileSize 2000  -plotInteval 1000 -sampleUnit m -sampleInteval 200 -sumThreshold 0.5 -tputReportTotal -buff
-erSize 4096 
+hadoop jar dfs-tests-1.0-SNAPSHOT-jar-with-dependencies.jar org.apache.dfs.test.TestDFSIOEnh -Dtest.build.data=adl://dfsiotest.azuredatalakestore.net/dfsio -read -nrFiles 10 -fileSize 2000  -plotInteval 1000 -sampleUnit m -sampleInteval 200 -sumThreshold 0.5 -tputReportTotal -bufferSize 4096 
 
 WASB
 
