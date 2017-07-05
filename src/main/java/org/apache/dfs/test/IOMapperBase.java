@@ -8,9 +8,9 @@ package org.apache.dfs.test;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,23 +18,24 @@ package org.apache.dfs.test;
  * limitations under the License.
  */
 
-        import java.io.IOException;
-        import java.net.InetAddress;
-        import org.apache.hadoop.fs.FileSystem;
-        import org.apache.hadoop.conf.Configuration;
-        import org.apache.hadoop.conf.Configured;
-        import org.apache.hadoop.io.LongWritable;
-        import org.apache.hadoop.io.Text;
-        import org.apache.hadoop.mapred.JobConf;
-        import org.apache.hadoop.mapred.Mapper;
-        import org.apache.hadoop.mapred.OutputCollector;
-        import org.apache.hadoop.mapred.Reporter;
+import java.io.IOException;
+import java.net.InetAddress;
+
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.Mapper;
+import org.apache.hadoop.mapred.OutputCollector;
+import org.apache.hadoop.mapred.Reporter;
 
 /**
  * Base mapper class for IO operations.
  * <p>
  * Two abstract method {@link #doIO(Reporter, String, long)} and
- * {@link #collectStats(OutputCollector,String,long,Object)} should be
+ * {@link #collectStats(OutputCollector, String, long, Object)} should be
  * overloaded in derived classes to define the IO operation and the
  * statistics data to be collected by subsequent reducers.
  *
@@ -53,7 +54,7 @@ public abstract class IOMapperBase extends Configured
         buffer = new byte[bufferSize];
         try {
             hostName = InetAddress.getLocalHost().getHostName();
-        } catch(Exception e) {
+        } catch (Exception e) {
             hostName = "localhost";
         }
     }
@@ -77,7 +78,7 @@ public abstract class IOMapperBase extends Configured
      * @param name file name
      * @param value offset within the file
      * @return object that is passed as a parameter to
-     *          {@link #collectStats(OutputCollector,String,long,Object)}
+     *          {@link #collectStats(OutputCollector, String, long, Object)}
      * @throws IOException
      */
     abstract Object doIO(Reporter reporter,
@@ -90,7 +91,7 @@ public abstract class IOMapperBase extends Configured
      * @param output
      * @param name file name
      * @param execTime IO execution time
-     * @param doIOReturnValue value returned by {@link #doIO(Reporter,String,long)}
+     * @param doIOReturnValue value returned by {@link #doIO(Reporter, String, long)}
      * @throws IOException
      */
     abstract void collectStats(OutputCollector<Text, Text> output,
@@ -106,9 +107,9 @@ public abstract class IOMapperBase extends Configured
      * <tt>value</tt>, which is the offset within the file.
      *
      * The parameters are passed to the abstract method
-     * {@link #doIO(Reporter,String,long)}, which performs the io operation,
+     * {@link #doIO(Reporter, String, long)}, which performs the io operation,
      * usually read or write data, and then
-     * {@link #collectStats(OutputCollector,String,long,Object)}
+     * {@link #collectStats(OutputCollector, String, long, Object)}
      * is called to prepare stat data for a subsequent reducer.
      */
     public void map(Text key,

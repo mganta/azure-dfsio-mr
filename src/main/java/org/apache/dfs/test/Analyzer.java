@@ -8,9 +8,9 @@ package org.apache.dfs.test;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,18 +19,18 @@ package org.apache.dfs.test;
  */
 
 
-        import java.io.IOException;
-        import java.util.StringTokenizer;
+import java.io.IOException;
+import java.util.StringTokenizer;
 
-        import org.apache.hadoop.conf.Configuration;
-        import org.apache.hadoop.fs.FileSystem;
-        import org.apache.hadoop.fs.Path;
-        import org.apache.hadoop.io.Text;
-        import org.apache.hadoop.mapreduce.Job;
-        import org.apache.hadoop.mapreduce.Mapper;
-        import org.apache.hadoop.mapreduce.Reducer;
-        import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-        import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class Analyzer {
 
@@ -40,10 +40,10 @@ public class Analyzer {
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             StringTokenizer tokens = new StringTokenizer(value.toString(), " \t\n\r\f%");
             String attr = tokens.nextToken();
-            if (attr.endsWith(":tput_samples")){
-                String[] tags=attr.split(":");
+            if (attr.endsWith(":tput_samples")) {
+                String[] tags = attr.split(":");
                 String[] samples = tokens.nextToken().split(";");
-                for(int j=0; !samples[j].startsWith("EoR"); j++){
+                for (int j = 0; !samples[j].startsWith("EoR"); j++) {
                     t.set(samples[j]);
                     context.write(new Text(tags[1]), t);
                 }
@@ -63,10 +63,10 @@ public class Analyzer {
         public void setup(Context context) throws IOException, InterruptedException {
             this.tStart = context.getConfiguration().getLong("ana_tStart", 1347347421736L);
             this.plotInterval = context.getConfiguration().getInt("ana_plotInterval", 1000);
-            this.sampleUnit = context.getConfiguration().getLong("ana_sampleUnit", 1024*1024);
+            this.sampleUnit = context.getConfiguration().getLong("ana_sampleUnit", 1024 * 1024);
             this.execTime = context.getConfiguration().getLong("ana_execTime", 767829);
-            this.fileSize = context.getConfiguration().getLong("ana_fileSize", 500*1024*1024);
-            this.maxslot = (int)(execTime/plotInterval)+1;
+            this.fileSize = context.getConfiguration().getLong("ana_fileSize", 500 * 1024 * 1024);
+            this.maxslot = (int) (execTime / plotInterval) + 1;
         }
 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
@@ -75,28 +75,28 @@ public class Analyzer {
                 String[] ss = val.toString().split(":");
                 long timeStamp = Long.parseLong(ss[0]);
                 long bytes = Long.parseLong(ss[1]);
-                double timePassed = (timeStamp-tStart)/(double)plotInterval;
-                processor.add((double)timePassed,(double)bytes);
+                double timePassed = (timeStamp - tStart) / (double) plotInterval;
+                processor.add((double) timePassed, (double) bytes);
             }
             processor.add(0, 0);
-            processor.add(maxslot+0.1, fileSize);
-            double[] resultValue = new double [maxslot+1];
-            double[]  bytesChanged = new double[maxslot+1];
-            for(int i = 0; i<=maxslot; i++){
-                resultValue[i]=processor.get(i);
+            processor.add(maxslot + 0.1, fileSize);
+            double[] resultValue = new double[maxslot + 1];
+            double[] bytesChanged = new double[maxslot + 1];
+            for (int i = 0; i <= maxslot; i++) {
+                resultValue[i] = processor.get(i);
             }
-            for (int i = 0; i<=maxslot-1; i++) {
-                bytesChanged[i] = resultValue[i+1]-resultValue[i];
+            for (int i = 0; i <= maxslot - 1; i++) {
+                bytesChanged[i] = resultValue[i + 1] - resultValue[i];
             }
             bytesChanged[maxslot] = 0;
-            for (int ri = 0; ri<=maxslot; ri++) {
-                result.set(ri+","+resultValue[ri]/(double)sampleUnit+","+bytesChanged[ri]/(double)sampleUnit);
+            for (int ri = 0; ri <= maxslot; ri++) {
+                result.set(ri + "," + resultValue[ri] / (double) sampleUnit + "," + bytesChanged[ri] / (double) sampleUnit);
                 context.write(key, result);
             }
         }
     }
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
         FileSystem fs = FileSystem.get(conf);
         Path outdir = new Path("/result.txt");
