@@ -88,7 +88,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
   private static final int TEST_TYPE_READ = 0;
   private static final int TEST_TYPE_WRITE = 1;
   private static final int TEST_TYPE_CLEANUP = 2;
-  private static final int DEFAULT_BUFFER_SIZE = 40000000;
+  private static final int DEFAULT_BUFFER_SIZE = 4096;
   private static final String BASE_FILE_NAME = "test_io_";
   private static final String DEFAULT_RES_FILE_NAME = "TestDFSIOEnh_results.log";
 
@@ -208,12 +208,10 @@ public class TestDFSIOEnh extends Configured implements Tool {
                        ) throws IOException{
 
         totalSize *= MEGA;
-      //  OutputStream out;
         DfsioeConfig.getInstance().getTestRootDir(getConf());
         FileSystem uriFs = FileSystem.get(URI.create(DfsioeConfig.getInstance().getTestRootDir()), getConf());
 
         FSDataOutputStream out = uriFs.create(new Path(DfsioeConfig.getInstance().getDataDir(), name), true, bufferSize);
-        System.out.println("path " + DfsioeConfig.getInstance().getDataDir() + " ===> name " + name);
         stats.objSize = totalSize;        
         
         long lastTimeStamp=0;
@@ -293,7 +291,10 @@ public class TestDFSIOEnh extends Configured implements Tool {
 
         totalSize *= MEGA;
         // open file
-        DataInputStream in = fs.open(new Path(DfsioeConfig.getInstance().getDataDir(), name));
+        DfsioeConfig.getInstance().getTestRootDir(getConf());
+        FileSystem uriFs = FileSystem.get(URI.create(DfsioeConfig.getInstance().getTestRootDir()), getConf());
+        FSDataInputStream in = uriFs.open(new Path(DfsioeConfig.getInstance().getDataDir(), name));
+
         stats.objSize = totalSize;
 
         long lastTimeStamp = 0;
